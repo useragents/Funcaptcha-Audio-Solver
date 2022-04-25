@@ -20,4 +20,4 @@
 
 ### Please note
 
-This captcha solver will only work on sites that support audio challenges, I am not responsible for your actions using this script.
+This captcha solver will only work on sites that support audio challenges, I am not responsible for your actions using this script. This script was made for educational purposes.
