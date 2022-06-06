@@ -2,8 +2,8 @@ from funcaptcha_solver import funcaptcha
 
 #Replace public_key and site with your key/site
 funcap = funcaptcha(
-	public_key = "", 
-	site = ""
+	public_key = "E5554D43-23CC-1982-971D-6A2262A2CA24", 
+	site = "https://twitch.tv/"
 )
 
 bad_captchas = 0
@@ -17,6 +17,8 @@ def solve_captcha():
 		if error == None:
 			answer["bad_captchas"] = bad_captchas
 			return captcha_token
+		if "not_supported" in error:
+			return "Site not supported / does not have audio challenges"
 		if "too high" in error:
 			return "Ratelimited"
 		else:
