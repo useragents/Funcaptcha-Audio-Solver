@@ -2,8 +2,8 @@ from funcaptcha_solver import funcaptcha
 
 #Replace public_key and site with your key/site
 funcap = funcaptcha(
-	public_key = "E5554D43-23CC-1982-971D-6A2262A2CA24", 
-	site = "https://twitch.tv/"
+	public_key = "", 
+	site = ""
 )
 
 bad_captchas = 0
