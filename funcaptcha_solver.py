@@ -107,6 +107,8 @@ class funcaptcha:
             headers = self.headers,
             data = data
         )
+        if "DENIED ACCESS" in r.text:
+            return False
         with open("audio.wav", "wb") as f:
             f.write(r.content)
     
@@ -206,7 +208,9 @@ class funcaptcha:
         game_token = self.get_game_token(session_token)
         self.load_game(session_token, game_token)
         self.switch_to_audio(session_token, game_token)
-        self.get_audio_captcha(session_token)
+        result = self.get_audio_captcha(session_token)
+        if result == False:
+            return session_token, "not_supported", None
         response = self.solve_captcha()
         if response == None:
             self.bad_captchas += 1
@@ -220,6 +224,9 @@ class funcaptcha:
         session_token, response, captcha_token = self.main()
         if response == None:
             answer = {"token": None, "error": "Bad captcha"}
+            return answer
+        if response == "not_supported":
+            answer = {"token": None, "error": "site_not_supported"}
             return answer
         data = {
             "session_token": session_token,
