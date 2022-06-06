@@ -111,6 +111,7 @@ class funcaptcha:
             return False
         with open("audio.wav", "wb") as f:
             f.write(r.content)
+        return True
     
     def most_frequent(self, list):
         try:
