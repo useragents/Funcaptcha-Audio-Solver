@@ -1,7 +1,12 @@
 <br/>
 <div align="center">
 
-  # Funcaptcha Audio Solver
+# Funcaptcha Audio Solver
+<h1>
+🌟 Join my Discord server <a href="https://discord.gg/x6UX9qufVR">here</a> 🌟
+</h1>
+  
+  
   Requests based captcha solver for Arkose Labs using speech recognition. Click <a href="https://github.com/useragents/Funcaptcha-Audio-Solver/issues">here</a> to report bugs.
 
   ![image](https://user-images.githubusercontent.com/102762968/161441758-32c535e7-9c19-45d3-8c66-c7a9c77e3357.png)
