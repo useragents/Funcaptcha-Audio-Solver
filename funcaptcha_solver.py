@@ -1,8 +1,8 @@
-import requests, random, string, time, json
+import requests, random, string, time
 import speech_recognition as sr
 
-class funcaptcha:
 
+class funcaptcha:
     def __init__(self, public_key, site):
         self.session = requests.Session()
         self.user_agent = "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36"
@@ -15,7 +15,7 @@ class funcaptcha:
         self.headers = {
             "Accept": "*/*",
             "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "User-Agent": self.user_agent
+            "User-Agent": self.user_agent,
         }
 
     def get_session_token(self):
@@ -23,21 +23,22 @@ class funcaptcha:
             "Accept": "*/*",
             "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
             "Referer": self.site,
-            "User-Agent": self.user_agent
+            "User-Agent": self.user_agent,
         }
-        rnd = "0." + ("").join(random.choices(string.digits, k = 17))
+        rnd = "0." + ("").join(random.choices(string.digits, k=17))
         data = {
             "bda": "",
             "public_key": self.public_key,
             "rnd": rnd,
             "site": self.site,
-            "userbrowser": self.user_agent
+            "userbrowser": self.user_agent,
         }
         r = self.session.post(
-            self.url + "/fc/gt2/public_key/{}".format(self.public_key),
-            headers = headers,
-            data = data
+            f"{self.url}/fc/gt2/public_key/{self.public_key}",
+            headers=headers,
+            data=data,
         )
+
         captcha_token = r.json()["token"]
         session_token = captcha_token.split("|")[0]
         return session_token, captcha_token
@@ -49,16 +50,11 @@ class funcaptcha:
             "analytics_tier": "40",
             "render_type": "canvas",
             "token": session_token,
-            "data[status]": "init"
+            "data[status]": "init",
         }
-        r = self.session.post(
-            self.url + "/fc/gfct/",
-            headers = self.headers,
-            data = data
-        )
-        game_token = r.json()["challengeID"]
-        return game_token
-    
+        r = self.session.post(f"{self.url}/fc/gfct/", headers=self.headers, data=data)
+        return r.json()["challengeID"]
+
     def load_game(self, session_token, game_token):
         data = {
             "sid": "eu-west-1",
@@ -68,14 +64,10 @@ class funcaptcha:
             "game_token": game_token,
             "category": "loaded",
             "analytics_tier": "40",
-            "action": "game loaded"
+            "action": "game loaded",
         }
-        r = self.session.post(
-            self.url + "/fc/a/",
-            headers = self.headers,
-            data = data
-        )
-    
+        self.session.post(f"{self.url}/fc/a/", headers=self.headers, data=data)
+
     def switch_to_audio(self, session_token, game_token):
         data = {
             "sid": "eu-west-1",
@@ -86,53 +78,49 @@ class funcaptcha:
             "game_token": game_token,
             "category": "audio captcha",
             "analytics_tier": "40",
-            "action": "user clicked audio"
+            "action": "user clicked audio",
         }
-        r = self.session.post(
-            self.url + "/fc/a/",
-            headers = self.headers,
-            data = data
-        )
-    
+        self.session.post(f"{self.url}/fc/a/", headers=self.headers, data=data)
+
     def get_audio_captcha(self, session_token):
         data = {
             "session_token": session_token,
             "analytics_tier": "40",
             "r": "eu-west-1",
             "game": "0",
-            "language": "en"
+            "language": "en",
         }
         r = self.session.post(
-            self.url + "/fc/get_audio/?session_token={}&analytics_tier=40&r=eu-west-1&game=0&language=en".format(session_token),
-            headers = self.headers,
-            data = data
+            f"{self.url}/fc/get_audio/?session_token={session_token}&analytics_tier=40&r=eu-west-1&game=0&language=en",
+            headers=self.headers,
+            data=data,
         )
+
         if "DENIED ACCESS" in r.text:
             return False
         with open("audio.wav", "wb") as f:
             f.write(r.content)
         return True
-    
+
     def most_frequent(self, list):
         try:
-            return max(set(list), key = list.count)
+            return max(set(list), key=list.count)
         except ValueError:
             return None
-    
+
     def solve_captcha(self):
         try:
             temp_reformed = []
             r = sr.Recognizer()
             with sr.WavFile("audio.wav") as source:
                 r.adjust_for_ambient_noise(source)
-                audio = r.record(source, duration = 7)
-            response = r.recognize(audio, show_all = True)
-            
+                audio = r.record(source, duration=7)
+            response = r.recognize(audio, show_all=True)
+
             for text in response:
                 reformed_text = self.replace_resp(text["text"])
-                if len(reformed_text) == 7:
-                    if reformed_text.isdigit():
-                        temp_reformed.append(reformed_text)
+                if len(reformed_text) == 7 and reformed_text.isdigit():
+                    temp_reformed.append(reformed_text)
             if len(reformed_text) != 0:
                 response = self.most_frequent(temp_reformed)
                 return response
@@ -141,10 +129,9 @@ class funcaptcha:
         except LookupError:
             self.bad_captchas += 1
             self.solve()
-     
-    
-    def replace_resp(self, resp: str): #Improves accuracy for speech recognition
-        resp = resp.lower() 
+
+    def replace_resp(self, resp: str):  # Improves accuracy for speech recognition
+        resp = resp.lower()
         replacements = {
             "one": "1",
             "to": "2",
@@ -197,7 +184,7 @@ class funcaptcha:
             " ": "",
             "r": "9",
             "l": "2",
-            "a": "4"
+            "a": "4",
         }
         for key in replacements:
             if key in resp:
@@ -213,17 +200,17 @@ class funcaptcha:
         if result == False:
             return session_token, "not_supported", None
         response = self.solve_captcha()
-        if response == None:
+        if response is None:
             self.bad_captchas += 1
             return session_token, None, captcha_token
         if len(response) != 7 or not response.isdigit():
             self.bad_captchas += 1
             self.main()
         return session_token, response, captcha_token
-    
+
     def solve(self):
         session_token, response, captcha_token = self.main()
-        if response == None:
+        if response is None:
             answer = {"token": None, "error": "Bad captcha"}
             return answer
         if response == "not_supported":
@@ -236,13 +223,9 @@ class funcaptcha:
             "language": "en",
             "r": "eu-west-1",
             "audio_type": "2",
-            "bio": ""
+            "bio": "",
         }
-        r = self.session.post(
-            self.url + "/fc/audio/",
-            headers = self.headers,
-            data = data
-        )
+        r = self.session.post(f"{self.url}/fc/audio/", headers=self.headers, data=data)
         if "Incorrect, try again" in r.text:
             self.retries += 1
             answer = {"token": None, "error": "Bad captcha"}
@@ -250,11 +233,12 @@ class funcaptcha:
         elif "response" in r.text:
             if r.json()["response"] == "correct":
                 solve_time = str(time.time() - self.start_time).split(".")[0]
-                answer = {   
-                    "token": captcha_token, 
-                    "solve_time": solve_time + "s",
-                    "error": None
+                answer = {
+                    "token": captcha_token,
+                    "solve_time": f"{solve_time}s",
+                    "error": None,
                 }
+
                 return answer
             elif r.json()["response"] == "incorrect":
                 answer = {"token": None, "error": r.json()["error_reply"]}
