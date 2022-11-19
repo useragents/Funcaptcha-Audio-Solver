@@ -3,7 +3,7 @@
 
 # Funcaptcha Audio Solver
 <h1>
-🌟 Join my Discord server <a href="https://discord.gg/x6UX9qufVR">here</a> 🌟
+🌟 Join my Discord server <a href="https://discord.gg/NrnKpUYjWR">here</a> 🌟
 </h1>
   
   
