@@ -1,6 +1,8 @@
 <br/>
 <div align="center">
 
+Code not working. Looking into a fix.
+
 # Funcaptcha Audio Solver
 <h1><b>‼️ NEW DISCORD SERVER! JOIN <a href="https://discord.gg/KRjZ58MfDD">HERE</a>! ‼️</b></h1>
   
